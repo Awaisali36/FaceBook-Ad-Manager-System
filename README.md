@@ -6,13 +6,10 @@
 [![AI Powered](https://img.shields.io/badge/AI-Powered-brightgreen)](https://github.com)
 
 <div align="center">
-
-  <a href="https://youtu.be/Z_zoyLifS1s>
-
-    <img src="https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg" alt="Demo Video" style="width:100%;">
-
+  <a href="https://www.youtube.com/watch?v=Z_zoyLifS1s">
+    <img src="https://img.youtube.com/vi/Z_zoyLifS1s/maxresdefault.jpg" alt="Facebook Ad Manager Demo" width="100%">
   </a>
-
+  <p><em>Click to watch: Complete system walkthrough (5 minutes)</em></p>
 </div>
 
 > **End-to-end AI-powered automation system that transforms product information into production-ready Facebook ads in minutes.**
