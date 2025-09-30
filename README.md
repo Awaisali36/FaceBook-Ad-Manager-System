@@ -5,6 +5,16 @@
 [![Airtable](https://img.shields.io/badge/Airtable-Database-blue)](https://airtable.com/)
 [![AI Powered](https://img.shields.io/badge/AI-Powered-brightgreen)](https://github.com)
 
+<div align="center">
+
+  <a href="https://youtu.be/Z_zoyLifS1s>
+
+    <img src="https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg" alt="Demo Video" style="width:100%;">
+
+  </a>
+
+</div>
+
 > **End-to-end AI-powered automation system that transforms product information into production-ready Facebook ads in minutes.**
 
 Replace entire marketing teams with an intelligent workflow that handles research, copywriting, creative prompts, and image generation automatically.
