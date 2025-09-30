@@ -1,0 +1,2448 @@
+{
+  "name": "Facebook Ad Manager",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "facebookad",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        80,
+        96
+      ],
+      "id": "8d7524d5-59d0-4c75-86ae-c5a1f8c88017",
+      "name": "Webhook",
+      "webhookId": "57230fc7-1e06-4a00-92c3-a3cb4e7ab105"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKUvwISqWsoRFZm",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblKUvwISqWsoRFZm"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get a record').item.json.id }}",
+            "Target Audience": "={{ $json.targetAudience }}",
+            "Pain Point": "={{ $json.painPoint }}",
+            "Solution": "={{ $json.solution }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Product URL",
+              "displayName": "Product URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Target Audience",
+              "displayName": "Target Audience",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pain Point",
+              "displayName": "Pain Point",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Run",
+              "displayName": "Run",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad Copy",
+              "displayName": "Generate Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Copy Status",
+              "displayName": "Ad Copy Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Running ",
+                  "value": "Running "
+                },
+                {
+                  "name": "Completed ",
+                  "value": "Completed "
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Copy",
+              "displayName": "Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Image Prompts",
+              "displayName": "Image Prompts",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        912,
+        96
+      ],
+      "id": "8155dfe0-fb38-43cf-b338-bda72431e2c8",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── n8n Code node ──\n// Goal: split `Target Audience`, `Pain Point`, and `Solution` into separate fields\n\nreturn items.map(item => {\n\t// 1) Get the model’s text block\n\tconst content = item.json?.choices?.[0]?.message?.content || '';\n\n\t// 2) Break it into lines, trim whitespace\n\tconst lines = content.split(/\\n+/).map(l => l.trim()).filter(Boolean);\n\n\t// 3) Extract the three values\n\tconst output = {\n\t\ttargetAudience: '',\n\t\tpainPoint: '',\n\t\tsolution: '',\n\t};\n\n\tfor (const line of lines) {\n\t\tconst [label, ...rest] = line.split(':');\n\t\tconst value = rest.join(':').trim();\n\n\t\tif (/^target audience$/i.test(label)) output.targetAudience = value;\n\t\tif (/^pain point$/i.test(label))     output.painPoint     = value;\n\t\tif (/^solution$/i.test(label))       output.solution      = value;\n\t}\n\n\t// 4) Return an item with just the three fields\n\treturn { json: output };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        96
+      ],
+      "id": "b931ee38-e492-472d-b27a-0e1c52d28c84",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Problem/Solution",
+        "height": 280,
+        "width": 1080,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fc8099cf-dedf-491c-9112-58371a2cf79a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "path": "Adcopy",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -112,
+        464
+      ],
+      "id": "8bdf715e-b4ee-49a7-b826-99e2e7304dd4",
+      "name": "Generate Ad Copy",
+      "webhookId": "07892d66-5051-4835-bd16-eaf86989be03"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Product name: {{ $json['Product Name'] }}\nTarget audience: {{ $json['Target Audience'] }}\nPain point: {{ $json['Pain Point'] }}\nSolution: {{ $json[\"Solution\"] }}\n\nUsing this information, generate the ads as specified.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a seasoned direct-response copywriter who specialises in high-converting Facebook ads.\n\nTASK\n• Write **exactly ten** distinct ad variations for the product described in the user message.  \n• Each variation MUST contain the following keys:\n  • \"headline\"  – punchy hook, ≤ 40 characters.  \n  • \"primaryText\" – 1-2 persuasive sentences (≤ 125 characters) that\n        – calls out the target audience,\n        – agitates their pain point,\n        – positions the product as the clear solution.  \n  • \"cta\" – a concise call-to-action verb phrase (e.g. “Join Now”, “Get Started”).\n\nSTYLE\n• Conversational, benefit-driven, second-person (“you”).  \n• Vary angles (pain, aspiration, social proof, urgency, curiosity, etc.).  \n• Use emojis sparingly (max 1 per ad).  \n• Avoid hashtags, all-caps shouting, or policy-violating claims.  \n\nOUTPUT\nReturn **only** valid JSON in this exact shape—no markdown, no extra keys:\n\n{\n  \"ads\": [\n    { \"headline\": \"\", \"primaryText\": \"\", \"cta\": \"\" },\n    { \"headline\": \"\", \"primaryText\": \"\", \"cta\": \"\" },\n    …\n  ]\n}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        624,
+        464
+      ],
+      "id": "66a7787a-7681-4e93-81c6-c126b6948720",
+      "name": "Ad Writer"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"ads\": [\n    {\n      \"headline\": \"Scale to $25K\",\n      \"primaryText\": \"Automation pros—tired of guessing? Daily coaching shows you the exact steps to 25k/mo. 🚀\",\n      \"cta\": \"Join Today\"\n    },\n    {\n      \"headline\": \"Stop Workflow Chaos\",\n      \"primaryText\": \"Your scripts break, clients churn. Get proven blueprints & live help—fix it fast.\",\n      \"cta\": \"Start Free Trial\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        752,
+        624
+      ],
+      "id": "fc065282-2e69-46c1-9e6e-aa51c9e2dbed",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Ad Copy",
+        "height": 396,
+        "width": 1672,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        352
+      ],
+      "id": "24935dff-2ef3-4b28-bfd0-14c78ecf1d28",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── n8n Code node ──\n// Input:  1 item whose JSON looks like { output: { ads: [ {headline, primaryText, cta}, … ] } }\n// Output: N items, each with headline, primaryText, cta, fullAd\n\nconst ads = items[0].json.output.ads || [];\n\nreturn ads.map(ad => {\n\t// Build the combined string in whatever format you like:\n\tconst fullAd = `${ad.headline}\\n\\n${ad.primaryText}\\n\\n${ad.cta}`;\n\n\treturn {\n\t\tjson: {\n\t\t\theadline:     ad.headline,\n\t\t\tprimaryText:  ad.primaryText,\n\t\t\tcta:          ad.cta,\n\t\t\tfullAd        // new field you can map into Airtable\n\t\t}\n\t};\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        464
+      ],
+      "id": "2d1bea6f-e624-41bf-93ae-69f1ca138f03",
+      "name": "Full Ad"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblWM9FeGy4syjwDe",
+          "mode": "list",
+          "cachedResultName": "Ad Copy",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblWM9FeGy4syjwDe"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Headline": "={{ $json.headline }}",
+            "Primary text": "={{ $json.primaryText }}",
+            "CTA": "={{ $json.cta }}",
+            "Full Ad Copy": "={{ $json.fullAd }}",
+            "Product": "={{ [ $('Get a record1').item.json.id ] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Ad Copy",
+              "displayName": "Full Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Primary text",
+              "displayName": "Primary text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Generate Image Prompt",
+              "displayName": "Generate Image Prompt",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Image Prompt Status",
+              "displayName": "Image Prompt Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Running",
+                  "value": "Running"
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Image Prompts",
+              "displayName": "Image Prompts",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Images",
+              "displayName": "Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1136,
+        464
+      ],
+      "id": "e15c905c-52ad-4e50-a285-35f7ae13b74c",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "imageprompt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        912
+      ],
+      "id": "0623914f-b9e5-4dd1-a063-9f84fda8e541",
+      "name": "Generate Image Prompts",
+      "webhookId": "528a8130-accf-49b0-aefe-ca0c2fa3aca2"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Image Prompts",
+        "height": 416,
+        "width": 1624,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        784
+      ],
+      "id": "522b7195-5b14-4688-87d2-9999132d48fe",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblWM9FeGy4syjwDe",
+          "mode": "list",
+          "cachedResultName": "Ad Copy",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblWM9FeGy4syjwDe"
+        },
+        "id": "={{ $('Generate Image Prompts').item.json.query.recordId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        912
+      ],
+      "id": "debcfbc4-6fed-4f75-84bf-140c50e3b7bf",
+      "name": "Get a record2",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=fullAd: {{ $json['Full Ad Copy'] }}\nGenerate the ten image prompts as specified above.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are an AI Art Director.\n\nGOAL  \n• Read the “fullAd” text supplied in the user message.  \n• Extract the product’s core promise, key benefit, emotion, and CTA.  \n• Produce **exactly ten** diverse text prompts suitable for Nano Banana (or a comparable model) to generate square Facebook-ad images.\n\nPROMPT REQUIREMENTS  \n• 1:1 aspect ratio (explicitly state “--ar 1:1” at the end).  \n• Modern, clean composition; bold focal point; high contrast; clutter-free background.  \n• Include brief overlay text—≤ 6 words—using or paraphrasing the ad’s headline/CTA.  \n• Vary creative angles: e.g. product-in-action, aspirational lifestyle, social-proof scene, emoji-accent, bold typography lock-up, etc.  \n• Incorporate brand-relevant colors implied by the copy (if none, default to vibrant blue & white).  \n• Never reference policy, Facebook, or Midjourney; never include hashtags.  \n• Use concise, comma-separated descriptors.\n• Donnot use any kind of the Quote while writting the prompt or inside the prompt.\n\n\nOUTPUT  \nReturn **only** valid JSON in this exact shape—no markdown, no extra keys:\n\n{\n  \"imagePrompts\": [\n    \"<prompt 1>\",\n    \"<prompt 2>\",\n    …\n    \"<prompt 10>\"\n  ]\n}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        432,
+        912
+      ],
+      "id": "33697f95-da56-445b-a830-26a435a06dd7",
+      "name": "Image Prompt Writer"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"imagePrompts\": [\n    \"sample prompt 1 --ar 1:1\",\n    \"sample prompt 2 --ar 1:1\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        1056
+      ],
+      "id": "0a4da991-a179-459c-9604-59ae9ff10474",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// input: 1 item from the parser\nconst prompts = items[0].json.output.imagePrompts || [];\n\n// ID of the Ad Copy record we fetched earlier\nconst adCopyId = $('Get a record2').item.json.id;            // \"recA...\" (Ad Copy)\n\n// If the Product column in Ad Copy is now a linked-record field,\n// it will already contain an array of Product IDs:\nconst productIdsFromAdCopy = $('Get a record2').item.json.Product || []; // e.g. [\"recP...\"]\n\nreturn prompts.map(p => ({\n  json: {\n    imagePrompt: p,\n    adCopyIds:   [ adCopyId ],             // ALWAYS an array\n    productIds:  productIdsFromAdCopy      // may be [] if you haven't linked products yet\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        912
+      ],
+      "id": "8216b840-725d-4a6e-b1f3-abe5df549a9e",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblfIcvECxpopkI8B",
+          "mode": "list",
+          "cachedResultName": "Image Prompts",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblfIcvECxpopkI8B"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Ad Copy": "=[ \"{{$('Get a record2').item.json.id}}\" ]",
+            "Products": "={{ $('Get a record2').item.json.Product }}",
+            "Image Pormpt": "={{ $json.imagePrompt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Image Pormpt",
+              "displayName": "Image Pormpt",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Products",
+              "displayName": "Products",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Copy",
+              "displayName": "Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Generate Images",
+              "displayName": "Generate Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Image Status",
+              "displayName": "Image Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Running ",
+                  "value": "Running "
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Images",
+              "displayName": "Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Images 2",
+              "displayName": "Images 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        896,
+        912
+      ],
+      "id": "0c90283f-2af7-41f0-a9d1-c0bd1e21b32a",
+      "name": "Create a record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://upload.imagekit.io/api/v1/files/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic cHJpdmF0ZV8xelZJZjFPdzJUVzBWSndOM052c1lCMzFaL0U9Og=="
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "fileName",
+              "value": "my-file-name.jpg"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        1360
+      ],
+      "id": "e42f6bd7-9a7a-4c73-8d98-f3750178e4c8",
+      "name": "Host Image"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblzxrKtLiTShpfRR",
+          "mode": "list",
+          "cachedResultName": "Images",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblzxrKtLiTShpfRR"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Image URL": "={{ $json.url }}",
+            "Images": "={{ [ {\"url\": \"$ json.url\" }] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Image URL",
+              "displayName": "Image URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Images",
+              "displayName": "Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Image Prompt",
+              "displayName": "Image Prompt",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Copy",
+              "displayName": "Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1136,
+        1360
+      ],
+      "id": "51ae5e82-5836-4ed5-b2a4-19ceae66b92a",
+      "name": "Create a record2",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "image",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        1360
+      ],
+      "id": "b8976636-8991-4061-ae30-0125330e3e30",
+      "name": "Generate Images",
+      "webhookId": "11084d1b-2a37-4519-825f-51ca1523c205"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Images",
+        "height": 300,
+        "width": 1880,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        1248
+      ],
+      "id": "d9473260-3903-4d09-a925-1ec359e62479",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKUvwISqWsoRFZm",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblKUvwISqWsoRFZm"
+        },
+        "id": "={{ $json.query.recordId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        96
+      ],
+      "id": "a69c4132-16a4-4255-bbdc-57514d263e77",
+      "name": "Get a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKUvwISqWsoRFZm",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblKUvwISqWsoRFZm"
+        },
+        "id": "={{ $('Generate Ad Copy').item.json.query.recordId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        368,
+        464
+      ],
+      "id": "dac7c2e9-01f7-4c41-a023-741b01d143c1",
+      "name": "Get a record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKUvwISqWsoRFZm",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblKUvwISqWsoRFZm"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Generate Ad Copy').item.json.query.recordId }}",
+            "Ad Copy Status": "Completed "
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Product URL",
+              "displayName": "Product URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Target Audience",
+              "displayName": "Target Audience",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Pain Point",
+              "displayName": "Pain Point",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Run",
+              "displayName": "Run",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad Copy",
+              "displayName": "Generate Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Copy Status",
+              "displayName": "Ad Copy Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Running ",
+                  "value": "Running "
+                },
+                {
+                  "name": "Completed ",
+                  "value": "Completed "
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Copy",
+              "displayName": "Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Image Prompts",
+              "displayName": "Image Prompts",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1328,
+        464
+      ],
+      "id": "eb27984e-83a9-4ca0-9d25-7602fb0e6c3c",
+      "name": "Update record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKUvwISqWsoRFZm",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblKUvwISqWsoRFZm"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.query.recordId }}",
+            "Ad Copy Status": "Running "
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Product URL",
+              "displayName": "Product URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Target Audience",
+              "displayName": "Target Audience",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Pain Point",
+              "displayName": "Pain Point",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Run",
+              "displayName": "Run",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad Copy",
+              "displayName": "Generate Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Copy Status",
+              "displayName": "Ad Copy Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Running ",
+                  "value": "Running "
+                },
+                {
+                  "name": "Completed ",
+                  "value": "Completed "
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Copy",
+              "displayName": "Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        464
+      ],
+      "id": "e4d493bc-ccd7-46af-8a29-2e64a7156adb",
+      "name": "Update record2",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblWM9FeGy4syjwDe",
+          "mode": "list",
+          "cachedResultName": "Ad Copy",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblWM9FeGy4syjwDe"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.query.recordId }}",
+            "Image Prompt Status": "Running"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Full Ad Copy",
+              "displayName": "Full Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Primary text",
+              "displayName": "Primary text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Image Prompt",
+              "displayName": "Generate Image Prompt",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Image Prompt Status",
+              "displayName": "Image Prompt Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Running",
+                  "value": "Running"
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Image Prompts",
+              "displayName": "Image Prompts",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Images",
+              "displayName": "Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        912
+      ],
+      "id": "9d0bc2e9-c2a6-4e94-b85c-2758c93fb411",
+      "name": "Update record3",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblWM9FeGy4syjwDe",
+          "mode": "list",
+          "cachedResultName": "Ad Copy",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblWM9FeGy4syjwDe"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Image Prompt Status": "Completed",
+            "id": "={{ $('Update record3').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Full Ad Copy",
+              "displayName": "Full Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Primary text",
+              "displayName": "Primary text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Image Prompt",
+              "displayName": "Generate Image Prompt",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Image Prompt Status",
+              "displayName": "Image Prompt Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Running",
+                  "value": "Running"
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Image Prompts",
+              "displayName": "Image Prompts",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Images",
+              "displayName": "Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1088,
+        912
+      ],
+      "id": "d055e278-a2fc-44fc-980c-29e2c158c83b",
+      "name": "Update Image Prompt Status",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblfIcvECxpopkI8B",
+          "mode": "list",
+          "cachedResultName": "Image Prompts",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblfIcvECxpopkI8B"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.query.recordId }}",
+            "Image Status": "Running "
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true
+            },
+            {
+              "id": "Image Pormpt",
+              "displayName": "Image Pormpt",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Products",
+              "displayName": "Products",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Copy",
+              "displayName": "Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Images",
+              "displayName": "Generate Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Image Status",
+              "displayName": "Image Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Running ",
+                  "value": "Running "
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Images",
+              "displayName": "Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Images 2",
+              "displayName": "Images 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        1360
+      ],
+      "id": "f9673409-506e-4f5c-b433-859cd05fb59a",
+      "name": "Image Status > Running",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblfIcvECxpopkI8B",
+          "mode": "list",
+          "cachedResultName": "Image Prompts",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblfIcvECxpopkI8B"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Image Status": "Completed",
+            "id": "={{ $('Image Status > Running').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Image Prompt",
+              "displayName": "Image Prompt",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Products",
+              "displayName": "Products",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Copy",
+              "displayName": "Ad Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Images",
+              "displayName": "Generate Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Image Status",
+              "displayName": "Image Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Running",
+                  "value": "Running"
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "recordId",
+              "displayName": "recordId",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Images",
+              "displayName": "Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Images 2",
+              "displayName": "Images 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Images 3",
+              "displayName": "Images 3",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        1360
+      ],
+      "id": "f2b706c1-afe2-4d3a-83e7-81d923341874",
+      "name": "Image Status > Completed",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6933e076-ccd4-4d66-80e3-d9d3682ec0fd",
+              "name": "base",
+              "value": "={{ $json.candidates[0].content.parts[1].inlineData.data }}",
+              "type": "string"
+            },
+            {
+              "id": "15220354-19ea-4a5d-b6af-c52e4adc8a33",
+              "name": "mime",
+              "value": "={{ $json.candidates[0].content.parts[1].inlineData.mimeType }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        1360
+      ],
+      "id": "bbed724c-0591-4a02-8c10-91351142ffc2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        768,
+        1360
+      ],
+      "id": "901a580d-193b-41d1-a0bf-f6bfd5fac366",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-20250514",
+          "cachedResultName": "Claude 4 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        1072
+      ],
+      "id": "30022041-aca3-42d2-9ac5-8238c9bc29ee",
+      "name": "Anthropic Chat Model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "eg7v1K6122ft5vPZ",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-20250514",
+          "cachedResultName": "Claude 4 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        624
+      ],
+      "id": "eccd7044-0b5e-4f00-9ce1-23ce3207d315",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "eg7v1K6122ft5vPZ",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "sonar",
+        "messages": {
+          "message": [
+            {
+              "content": "=You are a senior conversion-copy analyst.  \nYour task: **visit the page at {{ $json['Product URL'] }}**, read all visible copy (ignore navigation, header/footer, legal fine print), and distill the offer down to exactly THREE insights:\n\n• **Target Audience** – Describe the specific person or group this offer is written for (role, situation, aspirations).  \n• **Pain Point** – State the single, biggest problem or frustration that copy highlights.  \n• **Solution** – Explain how the product/service promises to resolve that pain, in one sentence.\n\n––– OUTPUT FORMAT –––  \nReturn plain text only, no commentary, in this exact template:\n\nTarget Audience: <one concise sentence>  \nPain Point: <one concise sentence>  \nSolution: <one concise sentence>\n\nIf the page can’t be loaded or lacks enough info, reply with:  \n“Target Audience: unknown | Pain Point: unknown | Solution: unknown”"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        496,
+        96
+      ],
+      "id": "4fcb13ea-edb4-4638-a3a6-66554f64d251",
+      "name": "Research Product",
+      "credentials": {
+        "perplexityApi": {
+          "id": "zDgC3jMHRj4FkCnx",
+          "name": "Perplexity account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "AIzaSyCIIMx_-FC9A5g8K3Ht3J4gKDKy7GoNn9w"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  contents: [\n    {\n      role: \"user\",\n      parts: [\n        {\n          text: $json[\"Image Pormpt\"]\n        }\n      ]\n    }\n  ],\n  // Optionally config for image generation, if supported\n})\n}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        352,
+        1360
+      ],
+      "id": "477d5be6-6c8f-4c44-9250-fa53ca058ae5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appiMP69otrP0K89q",
+          "mode": "list",
+          "cachedResultName": "Facebook Ad Manager",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblfIcvECxpopkI8B",
+          "mode": "list",
+          "cachedResultName": "Image Prompts",
+          "cachedResultUrl": "https://airtable.com/appiMP69otrP0K89q/tblfIcvECxpopkI8B"
+        },
+        "id": "={{ $('Generate Images').item.json.query.recordId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        1360
+      ],
+      "id": "13dca781-323b-4050-86be-e77a6670494e",
+      "name": "Get a record3",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "wmvl2UmL8fcCcBbp",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Ad Copy": {
+      "main": [
+        [
+          {
+            "node": "Update record2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Ad Writer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ad Writer": {
+      "main": [
+        [
+          {
+            "node": "Full Ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Full Ad": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Image Prompts": {
+      "main": [
+        [
+          {
+            "node": "Update record3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a record2": {
+      "main": [
+        [
+          {
+            "node": "Image Prompt Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Image Prompt Writer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Prompt Writer": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Create a record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Host Image": {
+      "main": [
+        [
+          {
+            "node": "Create a record2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Images": {
+      "main": [
+        [
+          {
+            "node": "Image Status > Running",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a record": {
+      "main": [
+        [
+          {
+            "node": "Research Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Update record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a record1": {
+      "main": [
+        [
+          {
+            "node": "Ad Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record2": {
+      "main": [
+        [
+          {
+            "node": "Get a record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record3": {
+      "main": [
+        [
+          {
+            "node": "Get a record2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record1": {
+      "main": [
+        [
+          {
+            "node": "Update Image Prompt Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Status > Running": {
+      "main": [
+        [
+          {
+            "node": "Get a record3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record2": {
+      "main": [
+        [
+          {
+            "node": "Image Status > Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Host Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Image Prompt Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ad Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Product": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a record3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e4052ac7-dc59-478f-abbd-a11d564d2fc2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fc8df292c220d9960b4e8bd907c00da7fe58197caad826c17ab0eea22bd4a1ed"
+  },
+  "id": "SFazxI1Q1TrrsQt1",
+  "tags": []
+}
