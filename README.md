@@ -7,16 +7,11 @@
 
 <div align="center">
   <a href="https://www.youtube.com/watch?v=Z_zoyLifS1s">
-    <img src="https://img.youtube.com/vi/Z_zoyLifS1s/maxresdefault.jpg" alt="Facebook Ad Manager Demo" width="100%">
+    <img src="https://img.youtube.com/vi/Z_zoyLifS1s/maxresdefault.jpg" alt="Watch Demo" style="width:100%; border-radius:10px;">
   </a>
-  <p><em>Click to watch: Complete system walkthrough (5 minutes)</em></p>
+  <br>
+  <strong>▶️ Click to Watch Full Demo on YouTube</strong>
 </div>
-
-> **End-to-end AI-powered automation system that transforms product information into production-ready Facebook ads in minutes.**
-
-Replace entire marketing teams with an intelligent workflow that handles research, copywriting, creative prompts, and image generation automatically.
-
----
 
 ## 📋 Table of Contents
 
